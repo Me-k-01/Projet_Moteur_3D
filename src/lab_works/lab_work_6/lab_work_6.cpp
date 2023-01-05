@@ -77,22 +77,45 @@ namespace M3D_ISICG
 			std::cerr << "Erreur de FBO" << std::endl;
 		}
 	}
-	bool LabWork6::_initGeometryPassProgram() { // Initialisation de geometryPassProgram
-		// III Le programme / 1
-		_geometryPassProgram = glCreateProgram();
-		
-		///////////////////////////// Recupération des shaders ///////////////////////////////// 
-		GLuint vertShader = _createShader( GL_VERTEX_SHADER , "geometry_pass.vert" );
-		GLuint fragShader = _createShader( GL_FRAGMENT_SHADER , "geometry_pass.frag" );
 
-		// Test compillation vertex shader
-		if ( (!_testShader(vertShader)) || !_testShader(fragShader) ) {
-			glDeleteShader( vertShader );
-			glDeleteShader( fragShader );
+	bool LabWork6::_initShadingPassProgram() { // Initialisation du shading pass program
+		
+		_shadingPassProgram = glCreateProgram();
+		GLuint shadingFragShader = _createShader( GL_FRAGMENT_SHADER , "shading_pass.frag" );
+		if (!_testShader(shadingFragShader)) {
+			glDeleteShader( shadingFragShader );
 			return false;
 		}
-		glAttachShader( _geometryPassProgram, vertShader );
-		glAttachShader( _geometryPassProgram, fragShader );
+
+		glAttachShader( _shadingPassProgram, shadingFragShader );
+		glLinkProgram( _shadingPassProgram ); 
+		// Check if link is ok .
+		GLint linked;
+		glGetProgramiv( _shadingPassProgram, GL_LINK_STATUS, &linked );
+		if ( !linked ) {
+			GLchar log[ 1024 ];
+			glGetProgramInfoLog( _shadingPassProgram, sizeof( log ), NULL, log );
+			std ::cerr << " Error linking shading program : " << log << std ::endl;
+			return false;
+		}
+		glDeleteShader( shadingFragShader );
+	}
+	bool LabWork6::_initGeometryPassProgram() { // Initialisation de geometryPassProgram
+		// III Le programme / 1
+		_geometryPassProgram = glCreateProgram(); 
+		
+		///////////////////////////// Recupération des shaders ///////////////////////////////// 
+		GLuint geometryVertShader = _createShader( GL_VERTEX_SHADER , "geometry_pass.vert" );
+		GLuint geometryFragShader = _createShader( GL_FRAGMENT_SHADER , "geometry_pass.frag" ); 
+
+		// Test compillation vertex shader
+		if ( (!_testShader(geometryVertShader)) || !_testShader(geometryFragShader) ) {
+			glDeleteShader( geometryVertShader );
+			glDeleteShader( geometryFragShader ); 
+			return false;
+		}
+		glAttachShader( _geometryPassProgram, geometryVertShader );
+		glAttachShader( _geometryPassProgram, geometryFragShader );
 		glLinkProgram( _geometryPassProgram ); 
 		// Check if link is ok .
 		GLint linked;
@@ -100,12 +123,16 @@ namespace M3D_ISICG
 		if ( !linked ) {
 			GLchar log[ 1024 ];
 			glGetProgramInfoLog( _geometryPassProgram, sizeof( log ), NULL, log );
-			std ::cerr << " Error linking program : " << log << std ::endl;
+			std ::cerr << " Error linking geometry program : " << log << std ::endl;
 			return false;
 		}
+		 
+
 		// shader inutile une fois lié au programme
-		glDeleteShader( vertShader );
-		glDeleteShader( fragShader );
+		glDeleteShader( geometryVertShader );
+		glDeleteShader(geometryFragShader);
+
+
 
 		///////////////////////////// Variable uniforme /////////////////////////////////
 		_uMVPMatrix = glGetUniformLocation(_geometryPassProgram, "uMVPMatrix");
@@ -127,8 +154,8 @@ namespace M3D_ISICG
 		 
 		// I / 2.0 Creation du G-buffer
 		_initGBuffer();
-		// III / 2. Méthode permettant d'initialiser geometryPassProgram
-		if (!_initGeometryPassProgram())
+		// III / 2. Méthode permettant d'initialiser les programs
+		if (!_initGeometryPassProgram() || !_initShadingPassProgram())
 			return false;   
 		 
 		// Position de la lumière  
@@ -152,6 +179,11 @@ namespace M3D_ISICG
 		_lumPos = _camera.getPosition();
 		Vec3f lumPosView = Vec3f(_camera.getViewMatrix() * Vec4f(_lumPos, 1.f));
 		glProgramUniform3fv(_geometryPassProgram, _uLumPos, 1, glm::value_ptr(lumPosView)); 
+	}
+
+	// Fonction de rendu
+	void LabWork6::_shadingPass() {
+		glUseProgram(_shadingPassProgram); 
 	}
 
 	void LabWork6::_geometryPass() { 

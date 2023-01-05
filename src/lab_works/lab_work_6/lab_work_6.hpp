@@ -37,6 +37,7 @@ namespace M3D_ISICG
 
 			// ================ GL data.  
 			GLuint _geometryPassProgram = GL_INVALID_INDEX;
+			GLuint _shadingPassProgram = GL_INVALID_INDEX;
 			GLint _uMVPMatrix = GL_INVALID_INDEX; 
 			GLint _uNormalMatrix = GL_INVALID_INDEX; 
 			GLint _uMVMatrix = GL_INVALID_INDEX; 
@@ -59,8 +60,10 @@ namespace M3D_ISICG
 			static bool _testShader(GLuint shader); 
 			void _initCamera();
 			bool _initGeometryPassProgram();
+			bool _initShadingPassProgram();
 			void _initGBuffer();
 			void _geometryPass(); 
+			void _shadingPass(); 
 			void _updateCameraUniform(); 
 	};
 } // namespace M3D_ISICG
