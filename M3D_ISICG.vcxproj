@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\lab_works\common\models\skybox_model.cpp" />
     <ClCompile Include="src\lab_works\lab_work_2\lab_work_2.cpp" />
     <ClCompile Include="lib\gl3w\GL\gl3w.c" />
     <ClCompile Include="lib\imgui\backends\imgui_impl_opengl3.cpp" />
@@ -37,10 +38,12 @@
     <ClCompile Include="src\lab_works\lab_work_4\lab_work_4.cpp" />
     <ClCompile Include="src\lab_works\lab_work_5\lab_work_5.cpp" />
     <ClCompile Include="src\lab_works\lab_work_6\lab_work_6.cpp" />
+    <ClCompile Include="src\lab_works\lab_work_fin\lab_work_fin.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\utils\image.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\lab_works\common\models\skybox_model.hpp" />
     <ClInclude Include="src\lab_works\lab_work_2\lab_work_2.hpp" />
     <ClInclude Include="lib\gl3w\GL\gl3w.h" />
     <ClInclude Include="lib\gl3w\GL\glcorearb.h" />
@@ -61,6 +64,7 @@
     <ClInclude Include="src\lab_works\lab_work_4\lab_work_4.hpp" />
     <ClInclude Include="src\lab_works\lab_work_5\lab_work_5.hpp" />
     <ClInclude Include="src\lab_works\lab_work_6\lab_work_6.hpp" />
+    <ClInclude Include="src\lab_works\lab_work_fin\lab_work_fin.hpp" />
     <ClInclude Include="src\utils\file_path.hpp" />
     <ClInclude Include="src\utils\gl_utils.hpp" />
     <ClInclude Include="src\utils\image.hpp" />
@@ -77,8 +81,6 @@
     <None Include="src\lab_works\lab_work_2\shaders\lw2.vert" />
     <None Include="src\lab_works\lab_work_3\shaders\lw3.frag" />
     <None Include="src\lab_works\lab_work_3\shaders\lw3.vert" />
-    <None Include="src\lab_works\lab_work_4\shaders\lw3.frag" />
-    <None Include="src\lab_works\lab_work_4\shaders\lw3.vert" />
     <None Include="src\lab_works\lab_work_4\shaders\mesh.frag" />
     <None Include="src\lab_works\lab_work_4\shaders\mesh.vert" />
     <None Include="src\lab_works\lab_work_5\shaders\mesh_texture.frag" />
@@ -86,6 +88,8 @@
     <None Include="src\lab_works\lab_work_6\shaders\geometry_pass.frag" />
     <None Include="src\lab_works\lab_work_6\shaders\geometry_pass.vert" />
     <None Include="src\lab_works\lab_work_6\shaders\shading_pass.frag" />
+    <None Include="src\lab_works\lab_work_fin\shaders\mesh_texture.frag" />
+    <None Include="src\lab_works\lab_work_fin\shaders\mesh_texture.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

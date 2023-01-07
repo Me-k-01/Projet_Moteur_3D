@@ -15,7 +15,8 @@ namespace M3D_ISICG
 			LAB_WORK_3 = 3,
 			LAB_WORK_4 = 4,
 			LAB_WORK_5 = 5,
-			LAB_WORK_6 = 6
+			LAB_WORK_6 = 6,
+			LAB_WORK_FIN = 7
 		};
 
 	  public:

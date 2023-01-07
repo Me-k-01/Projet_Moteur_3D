@@ -81,6 +81,8 @@ namespace M3D_ISICG
 	bool LabWork6::_initShadingPassProgram() { // Initialisation du shading pass program
 		
 		_shadingPassProgram = glCreateProgram();
+
+		///////////////////////////// Recupération des shaders ///////////////////////////////// 
 		GLuint shadingFragShader = _createShader( GL_FRAGMENT_SHADER , "shading_pass.frag" );
 		if (!_testShader(shadingFragShader)) {
 			glDeleteShader( shadingFragShader );
@@ -99,6 +101,9 @@ namespace M3D_ISICG
 			return false;
 		}
 		glDeleteShader( shadingFragShader );
+
+		_uMVMatrix = glGetUniformLocation(_shadingPassProgram, "uMVMatrix"); 
+		_uLumPos = glGetUniformLocation(_shadingPassProgram, "uLumPos"); 
 	}
 	bool LabWork6::_initGeometryPassProgram() { // Initialisation de geometryPassProgram
 		// III Le programme / 1
@@ -136,9 +141,7 @@ namespace M3D_ISICG
 
 		///////////////////////////// Variable uniforme /////////////////////////////////
 		_uMVPMatrix = glGetUniformLocation(_geometryPassProgram, "uMVPMatrix");
-		_uNormalMatrix = glGetUniformLocation(_geometryPassProgram, "uNormalMatrix");
-		_uMVMatrix = glGetUniformLocation(_geometryPassProgram, "uMVMatrix"); 
-		_uLumPos = glGetUniformLocation(_geometryPassProgram, "uLumPos"); 
+		_uNormalMatrix = glGetUniformLocation(_geometryPassProgram, "uNormalMatrix"); 
 		
 		return true;
 	}
@@ -148,22 +151,55 @@ namespace M3D_ISICG
 		// Set the color used by glClear to clear the color buffer (in render()).
 		glClearColor( _bgColor.x, _bgColor.y, _bgColor.z, _bgColor.w );
 		glEnable(GL_DEPTH_TEST);
-		//glDisable(GL_DEPTH_TEST);
-		//glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
 		 
 		// I / 2.0 Creation du G-buffer
 		_initGBuffer();
 		// III / 2. Méthode permettant d'initialiser les programs
-		if (!_initGeometryPassProgram() || !_initShadingPassProgram())
+		if (!_initGeometryPassProgram())
 			return false;   
+		if (!_initShadingPassProgram())
+			return false;
 		 
 		// Position de la lumière  
 		_lumPos = Vec3f(1, 1, 0); 
-		glProgramUniform3fv(_geometryPassProgram, _uLumPos, 1, glm::value_ptr(Vec3f(_camera.getViewMatrix() * Vec4f(_lumPos, 1))));
+		glProgramUniform3fv(_shadingPassProgram, _uLumPos, 1, glm::value_ptr(Vec3f(_camera.getViewMatrix() * Vec4f(_lumPos, 1))));
 
-		// Démarage du programme 
-		glUseProgram(_geometryPassProgram);
+		
+		///////////////////////////// QUAD /////////////////////////////////
+		_poly = {Vec2f(-1, 1), Vec2f(1, 1), Vec2f(1, -1), Vec2f(-1, -1)};
+		// 1.4. stockage des indices de sommets formant les deux triangles
+		_polyTri = {0, 1, 2, 0, 2, 3};
+
+
+		glCreateBuffers(1, &_ebo);
+		// 1.6. remplir EBO 
+		glNamedBufferData(_ebo, _polyTri.size() * sizeof(int), _polyTri.data(), GL_STATIC_DRAW); 
+
+		glCreateBuffers(1, &_vbo);
+		glNamedBufferData(_vbo, _poly.size() * sizeof(Vec2f), _poly.data(), GL_STATIC_DRAW);
+		//glVertexArrayAttribBinding(_vao, 0, 0);
+		 
+		glCreateVertexArrays(1, &_vao);
+
+		// activation des attributs de vbo
+		glEnableVertexArrayAttrib( _vao, 0);
+		glEnableVertexArrayAttrib( _vao, 1);
+		// format de l'attribut d'indice 0, 2 valeur de type float par points, non normalisé, sans offset
+		glVertexArrayAttribFormat(_vao, 0, 2, GL_FLOAT, GL_FALSE, 0);
+		glVertexArrayAttribFormat(_vao, 1, 4, GL_FLOAT, GL_FALSE, 0);
+		
+		// Indice : 0, offset : 0, stride : distance entre les differents éléments dans le buffer (taille du type des éléments du buffer)
+		glVertexArrayVertexBuffer(_vao, 0, _vbo, 0.f, sizeof(Vec2f)); 
+		// Indice d'attribut : 0, addresse de bind : 0
+		glVertexArrayAttribBinding(_vao, 0, 0);
+		glVertexArrayAttribBinding(_vao, 1, 1);
+
+		// 1.7. lier ebo et vao
+		glVertexArrayElementBuffer(_vao, _ebo);
+
+
+
 
 		///////////////////////////// Mesh /////////////////////////////////
 		_mesh_model.load("bunny2", "data/models/bunny_2.obj");
@@ -178,23 +214,33 @@ namespace M3D_ISICG
 	void LabWork6::animate( const float p_deltaTime ) {
 		_lumPos = _camera.getPosition();
 		Vec3f lumPosView = Vec3f(_camera.getViewMatrix() * Vec4f(_lumPos, 1.f));
-		glProgramUniform3fv(_geometryPassProgram, _uLumPos, 1, glm::value_ptr(lumPosView)); 
+		glProgramUniform3fv(_shadingPassProgram, _uLumPos, 1, glm::value_ptr(lumPosView)); 
 	}
 
 	// Fonction de rendu
 	void LabWork6::_shadingPass() {
 		glUseProgram(_shadingPassProgram); 
+		// Desactivation du test de profondeur
+		glDisable(GL_DEPTH_TEST); 
+
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
+		// Indiquer au fragment shader d'écrire dans le frame buffer par défaut
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);  
+
+		// Rendu du carré
+		glBindVertexArray(_vao);
+		glDrawElements(GL_TRIANGLES, _polyTri.size(), GL_UNSIGNED_INT, 0);  
+		glBindVertexArray(0); 
 	}
 
-	void LabWork6::_geometryPass() { 
-		glUseProgram(_geometryPassProgram);
-		glDisable(GL_DEPTH_TEST);
-		// Nettoyer le buffer
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );  
+	void LabWork6::_geometryPass() {  
+		glUseProgram(_geometryPassProgram); 
+		glEnable(GL_DEPTH_TEST);  
 		// IV / 2. Indiquer au fragment shader d'écrire dans le fbo
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _fboId);
-		// Nettoyer le buffer 
-		glClear(GL_COLOR_BUFFER_BIT);
+		// Nettoyer le buffer
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );   
+		_mesh_model.render(_geometryPassProgram); 
 
 		// IV / 3. Verifier que cela fonctionne en copiant une des valeurs du buffer dans GL_DRAW_FRAMEBUFFER
 		// Selection du buffer à lire
@@ -205,8 +251,7 @@ namespace M3D_ISICG
 			GL_COLOR_ATTACHMENT3,
 			GL_COLOR_ATTACHMENT4
 		};
-		glNamedFramebufferReadBuffer(_fboId, drawBuffer[_currDrawBuffer]); 
-		_mesh_model.render(_geometryPassProgram);  
+		glNamedFramebufferReadBuffer(_fboId, drawBuffer[_currDrawBuffer]);  
 		// Copie du buffer src (_fboId) vers destination (buffer par defaut = 0)
 		glBlitNamedFramebuffer(_fboId, 0, 
 			0, 0, _windowWidth, _windowHeight, 
@@ -214,10 +259,10 @@ namespace M3D_ISICG
 			GL_COLOR_BUFFER_BIT, // maque soit GL_COLOR_BUFFER_BIT ou GL_DEPTH_BUFFER_BIT 
 			GL_LINEAR // Filtre
 		);
+
 		// IV / 2. remettre le framebuffer à 0
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);  
-
-		glEnable(GL_DEPTH_TEST);
+		 
 	}
 
 	// Update les differentes matrices model / vue / projection
@@ -227,13 +272,13 @@ namespace M3D_ISICG
 		Mat4f mvMatrix = _camera.getViewMatrix() * _mesh_model._transformation; 
 		Mat4f normalMatrix = glm::transpose(glm::inverse(mvMatrix));
 		glProgramUniformMatrix4fv(_geometryPassProgram, _uNormalMatrix, 1, false, glm::value_ptr(normalMatrix));  
-		glProgramUniformMatrix4fv(_geometryPassProgram, _uMVMatrix, 1, false, glm::value_ptr(mvMatrix));  
-		//std::cout << "testA" << std::endl; 
+		glProgramUniformMatrix4fv(_shadingPassProgram, _uMVMatrix, 1, false, glm::value_ptr(mvMatrix));  
 	} 
 
 	void LabWork6::render() { 
 		// IV / 1. Appeler les shaders de la geometry pass
 		_geometryPass(); 
+		//_shadingPass(); // L'affichage du lapin sur le quad du shading pass ne fonctionne pas
 	}
 
 	void LabWork6::displayUI()

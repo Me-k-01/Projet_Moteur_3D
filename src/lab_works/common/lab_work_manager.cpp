@@ -6,14 +6,15 @@
 #include "lab_work_4/lab_work_4.hpp"
 #include "lab_work_5/lab_work_5.hpp"
 #include "lab_work_6/lab_work_6.hpp"
+#include "lab_work_fin/lab_work_fin.hpp"
 
 
 namespace M3D_ISICG
 {
 	LabWorkManager::LabWorkManager()
 	{
-		_current = new LabWork6();
-		_type	 = TYPE::LAB_WORK_6;
+		_current = new LabWorkFin();
+		_type	 = TYPE::LAB_WORK_FIN;
 	}
 
 	void LabWorkManager::drawMenu()
@@ -100,6 +101,20 @@ namespace M3D_ISICG
 				delete _current ; // Delete old lab work .
 				_current = new LabWork6(); // Create new lab work .
 				_type = TYPE::LAB_WORK_6; // Update type .
+				// Update window size .
+				_current->resize( w, h );
+				_current->init(); // Don ’t forget to call init ().
+			}
+		}
+
+		if ( ImGui::MenuItem( "Projet final" ) ) {
+			if ( _type != TYPE::LAB_WORK_FIN ) {
+				// Keep window size.
+				const int w = _current->getWindowWidth();
+				const int h = _current->getWindowHeight();
+				delete _current ; // Delete old lab work .
+				_current = new LabWorkFin(); // Create new lab work .
+				_type = TYPE::LAB_WORK_FIN; // Update type .
 				// Update window size .
 				_current->resize( w, h );
 				_current->init(); // Don ’t forget to call init ().

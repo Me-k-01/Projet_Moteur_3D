@@ -46,12 +46,8 @@ namespace M3D_ISICG
 		return true;
 	}
 	 
-	void LabWork4::_initCamera() {  
-		#ifdef MODEL_1
-			_camera.setPosition(Vec3f(0, 1, 3));
-		#else
-			_camera.setPosition(Vec3f(1, 1, 0));
-		#endif
+	void LabWork4::_initCamera() {   
+		_camera.setPosition(Vec3f(1, 0, 0)); 
 		_updateCameraUniform();
 	}
 

@@ -115,6 +115,12 @@
     <ClCompile Include="src\lab_works\lab_work_6\lab_work_6.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\lab_works\common\models\skybox_model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lab_works\lab_work_fin\lab_work_fin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\application.hpp">
@@ -184,6 +190,8 @@
     <ClInclude Include="src\lab_works\lab_work_4\lab_work_4.hpp" />
     <ClInclude Include="src\lab_works\lab_work_5\lab_work_5.hpp" />
     <ClInclude Include="src\lab_works\lab_work_6\lab_work_6.hpp" />
+    <ClInclude Include="src\lab_works\common\models\skybox_model.hpp" />
+    <ClInclude Include="src\lab_works\lab_work_fin\lab_work_fin.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\lab_works\lab_work_1\shaders\lw1.frag">
@@ -196,8 +204,6 @@
     <None Include="src\lab_works\lab_work_2\shaders\lw2.vert" />
     <None Include="src\lab_works\lab_work_3\shaders\lw3.frag" />
     <None Include="src\lab_works\lab_work_3\shaders\lw3.vert" />
-    <None Include="src\lab_works\lab_work_4\shaders\lw3.frag" />
-    <None Include="src\lab_works\lab_work_4\shaders\lw3.vert" />
     <None Include="src\lab_works\lab_work_4\shaders\mesh.frag" />
     <None Include="src\lab_works\lab_work_4\shaders\mesh.vert" />
     <None Include="data\models\bunny.mtl" />
@@ -208,5 +214,7 @@
     <None Include="src\lab_works\lab_work_6\shaders\geometry_pass.frag" />
     <None Include="src\lab_works\lab_work_6\shaders\geometry_pass.vert" />
     <None Include="src\lab_works\lab_work_6\shaders\shading_pass.frag" />
+    <None Include="src\lab_works\lab_work_fin\shaders\mesh_texture.frag" />
+    <None Include="src\lab_works\lab_work_fin\shaders\mesh_texture.vert" />
   </ItemGroup>
 </Project>

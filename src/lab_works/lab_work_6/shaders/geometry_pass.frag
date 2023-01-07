@@ -20,11 +20,11 @@ layout( binding = 2 ) uniform sampler2D uSpecularMap;
 layout( binding = 3 ) uniform sampler2D uShininessMap; 
 layout( binding = 4 ) uniform sampler2D uNormalMap;
 
-layout( location = 0 ) out vec3 oFragPosition;
-layout( location = 1 ) out vec3 oNormals;
-layout( location = 2 ) out vec3 oAmbiant;
-layout( location = 3 ) out vec3 oDiffuse;
-layout( location = 4 ) out vec4 oSpecular;
+layout( location = 0 ) out vec3 gFragPosition;
+layout( location = 1 ) out vec3 gNormals;
+layout( location = 2 ) out vec3 gAmbiant;
+layout( location = 3 ) out vec3 gDiffuse;
+layout( location = 4 ) out vec4 gSpecular;
 
 void main() { 
 	vec3 coefDiffuse = uDiffuse;
@@ -40,23 +40,20 @@ void main() {
 	vec3 coefSpecular = uHasSpecularMap ? texture(uSpecularMap, vTextCoords).xxx : uSpecular;
 	float coefShininess = uHasShininessMap ? texture(uShininessMap, vTextCoords).x : uShininess;
 
-	vec3 norm; 
-		
+	 
+	/*vec3 norm; 
 	if (uHasNormalMap) { // Avec normal map: calcul en Tangente space 
 		norm = texture(uNormalMap, vTextCoords).rgb;
 		norm = normalize(norm * 2.0 - 1.0);
 	} else { // Sans normal map: calcul en View Space
 		norm = normalize(vNormal); 
-	} 
-	
+	} */
+	vec3 norm = normalize(vNormal); 
 
 
-	oFragPosition = gl_FragCoord.xyz;
-	oAmbiant = coefAmbient;
-	oDiffuse = coefDiffuse; // * max(cosAngleDiff, 0);
-	oSpecular = vec4(coefSpecular.xyz, coefShininess); /*  * pow( 
-		max(cosAngleSpec, 0), 
-		coefShininess
-	); */
-	oNormals = norm;
+	gFragPosition = gl_FragCoord.xyz;
+	gAmbiant = coefAmbient;
+	gDiffuse = coefDiffuse;
+	gSpecular = vec4(coefSpecular.xyz, coefShininess);
+	gNormals = norm;
 }
