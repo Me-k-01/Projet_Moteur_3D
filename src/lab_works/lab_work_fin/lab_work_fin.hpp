@@ -6,6 +6,7 @@
 #include "define.hpp"
 #include "common/camera.hpp"
 #include "common/models/triangle_mesh_model.hpp"
+//#include "common/models/skybox_model.hpp"
 #include "utils/random.hpp"
 #include <vector>
 
@@ -30,6 +31,8 @@ namespace M3D_ISICG
 			//Mesh _mesh;
 			TriangleMeshModel _mesh_model; 
 			Camera _camera;
+			//SkyboxMesh skybox;
+			
 			// ================
 
 

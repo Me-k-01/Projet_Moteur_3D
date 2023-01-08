@@ -278,6 +278,7 @@ namespace M3D_ISICG
 	void LabWork6::render() { 
 		// IV / 1. Appeler les shaders de la geometry pass
 		_geometryPass(); 
+		// Décommenter pour utiliser le shading pass
 		//_shadingPass(); // L'affichage du lapin sur le quad du shading pass ne fonctionne pas
 	}
 

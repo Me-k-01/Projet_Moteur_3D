@@ -41,7 +41,7 @@ namespace M3D_ISICG
 		_uAmbient = glGetUniformLocation(p_glProgram, "uAmbient");
 	}
 	
-	void SkyboxMesh::_load(std::vector<std::string> faces) { 
+	void SkyboxMesh::_loadTextures(std::vector<std::string> faces) { 
 
 		if (VERBOSE)
 			std::cout << "Loading skybox ";
@@ -86,8 +86,8 @@ namespace M3D_ISICG
 				h = image._height;
 				mipmaplevel = log2(std::max(w, h));
 				// Setup the texture format.
+				// GL_TEXTURE_CUBE_MAP_POSITIVE_X  ?
 				glTextureStorage2D(_textureId, mipmaplevel, internalFormat, w, h); 
-				//glTextureStorage3D(_textureId, mipmaplevel, internalFormat, image._width, image._height); 
 			}
 		}
 		// Pour les paramètre, je prends simplement la dernière texture qui à été donné
@@ -101,7 +101,19 @@ namespace M3D_ISICG
 		// Fill the texture.
 		glTextureSubImage3D(_textureId, mipmaplevel, 0, 0, 0, w, h, w, format, GL_UNSIGNED_BYTE, NULL);
 	}
+	void SkyboxMesh::load() {
+		 std::vector<std::string> faces = {
+			"right.png",
+			"left.png",
+			"top.png",
+			"bottom.png",
+			"front.png",
+			"back.png"
+		};
 
+		 _loadTextures(faces);
+		 _setupGL();
+	}
 	void SkyboxMesh::cleanGL() 	{
 		glDisableVertexArrayAttrib( _vao, 0 );
 		glDisableVertexArrayAttrib( _vao, 1 );
@@ -118,6 +130,8 @@ namespace M3D_ISICG
 		glCreateBuffers(1, &_ebo);
 		glCreateBuffers(1, &_vbo); 
 		glCreateVertexArrays(1, &_vao); 
+		// TODO : set up selon la cube map
+		/*
 		glNamedBufferData(_ebo, _indices.size() * sizeof(unsigned int), _indices.data(), GL_STATIC_DRAW);
 		glNamedBufferData(_vbo, _vertices.size() * sizeof(Vertex), _vertices.data(), GL_STATIC_DRAW);
 
@@ -147,6 +161,6 @@ namespace M3D_ISICG
 
 		// lier ebo et vao
 		glVertexArrayElementBuffer(_vao, _ebo);
-		
+		*/
 	}
 } // namespace M3D_ISICG

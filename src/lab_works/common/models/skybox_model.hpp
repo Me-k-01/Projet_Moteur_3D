@@ -20,8 +20,8 @@ namespace M3D_ISICG
 	 
 
 	class SkyboxMesh
-	{
-		std::string _dirPath = "./data/models/skybox";
+	{ 
+
 	  public:
 		SkyboxMesh() = delete;
 		SkyboxMesh( const std::string &				p_name,
@@ -34,10 +34,11 @@ namespace M3D_ISICG
 
 		void cleanGL();
 		void uniformSetUp(const GLuint p_glProgram);
+		void load();
 
-	  private:
+	  private: 
 		void _setupGL();  
-		void _load(std::vector<std::string> faces); // Charger les textures
+		void _loadTextures(std::vector<std::string> faces); // Charger les textures 
 
 	  public:
 		std::string _name = "Unknown";
@@ -49,11 +50,14 @@ namespace M3D_ISICG
 
 		// ================ GL data.
 		unsigned int _textureId;
+
+	  private:
 		GLuint _vao = GL_INVALID_INDEX; // Vertex Array Object
 		GLuint _vbo = GL_INVALID_INDEX; // Vertex Buffer Object
 		GLuint _ebo = GL_INVALID_INDEX; // Element Buffer Object
+		GLuint _uAmbient = GL_INVALID_INDEX;  
 		
-		GLuint _uAmbient = GL_INVALID_INDEX; 
+		std::string _dirPath = "./data/models/skybox/";
 	};	
 } // namespace M3D_ISICG
 

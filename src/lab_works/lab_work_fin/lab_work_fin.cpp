@@ -108,17 +108,10 @@ namespace M3D_ISICG
 		///////////////////////////// Démarage du programme /////////////////////////////////
 		glUseProgram(_program);
 
-		///////////////////////////// Mesh ///////////////////////////////// 
-		/*#ifdef MODEL_1
-			_mesh_model.load("bunny2", "data/models/bunny_2.obj");
-		#else
-			_mesh_model.load("sponza", "data/models/sponza/sponza.obj");
-			_mesh_model._transformation = glm::scale(_mesh_model._transformation, Vec3f(0.003f));
-		#endif*/
+		///////////////////////////// Mesh /////////////////////////////////  
 		_mesh_model.load("sponza", "data/models/sponza/sponza.obj");
-		_mesh_model._transformation = glm::scale(_mesh_model._transformation, Vec3f(0.003f));
 		//_mesh_model.load("conference", "data/models/conference.obj");
-		//_mesh_model._transformation = glm::scale(_mesh_model._transformation, Vec3f(0.003f)); // Scaling du modèle
+		_mesh_model._transformation = glm::scale(_mesh_model._transformation, Vec3f(0.003f)); // Scaling du modèle
 		_mesh_model.uniformSetUp(_program); // Préparation des textures du modèle
 		
 		_lightsPos = {Vec3f(0, 3, 0), Vec3f(1, 3, 0), Vec3f(0, 3, 1)}; // Lumière RGB
@@ -128,8 +121,10 @@ namespace M3D_ISICG
 		glProgramUniform1f(_program, _uStrength, _strength);
 		glProgramUniform2fv(_program, _uRes, 1, glm::value_ptr(Vec2f(_resolutionNoise, _resolutionNoise)));
 		_updateLightColors();
-
 		_initCamera();
+
+		// Recupération de la skybox
+		//skybox.load();
 		
 		glProgramUniform2fv(_program, _uRes, 1, glm::value_ptr(Vec2f(_resolutionNoise, _resolutionNoise)));
 
@@ -153,6 +148,9 @@ namespace M3D_ISICG
 
 	void LabWorkFin::render() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );    
+		//glBindVertexArray(skyboxVAO);
+		//glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+		//glDrawArrays(GL_TRIANGLES, 0, 36);
 		_mesh_model.render(_program);  
 	}
 	 
@@ -193,9 +191,9 @@ namespace M3D_ISICG
 		const char* const c[] = {
 			"Normal",
 			"Dance floor (Voronoi)", 
-			"Psychedelique (Voronoi)",
-			"Perlin",
-			"Perlin et Voronoi"
+			"Psychedelique (Voronoi 2)",
+			"Perlin static",
+			"Perlin & Voronoi"
 		};
 		if (ImGui::BeginListBox("Type de texture ambient")) {
 			ImGui::ListBox("", &_currAmbient, c, 5);

@@ -3,7 +3,7 @@
 #include "utils/read_file.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include <iostream>
-#define MODEL_1 // Utilise le modèle du lapin de la partie 1 du TP
+//#define MODEL_1 // Utilise le modèle du lapin de la partie 1 du TP
 
 namespace M3D_ISICG
 {
